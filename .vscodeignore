@@ -1,0 +1,11 @@
+.vscode-test/
+.vscode/
+.github/
+node_modules/
+src/**
+docs/brief.md
+tsconfig.json
+esbuild.mjs
+*.vsix
+.gitignore
+package-lock.json

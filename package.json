@@ -1,0 +1,68 @@
+{
+  "name": "paste-as-markdown",
+  "displayName": "Paste as Markdown",
+  "description": "Paste rich text from Word, websites, and more as clean Markdown. Like Obsidian, but in VS Code.",
+  "version": "0.1.0",
+  "publisher": "digitarald",
+  "icon": "docs/icon.png",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.109.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/digitarald/paste-as-markdown"
+  },
+  "homepage": "https://github.com/digitarald/paste-as-markdown#readme",
+  "bugs": {
+    "url": "https://github.com/digitarald/paste-as-markdown/issues"
+  },
+  "categories": [
+    "Formatters",
+    "Other"
+  ],
+  "keywords": [
+    "markdown",
+    "paste",
+    "html",
+    "rich text",
+    "word",
+    "clipboard",
+    "obsidian"
+  ],
+  "activationEvents": [
+    "onLanguage:markdown"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Paste as Markdown",
+      "properties": {
+        "pasteAsMarkdown.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable automatic conversion of rich text to Markdown when pasting."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "test": "node --import tsx src/test/run.ts",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.2",
+    "@types/turndown": "^5.0.6",
+    "@types/vscode": "^1.109.0",
+    "esbuild": "^0.27.3",
+    "@vscode/vsce": "^3.3.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "turndown": "^7.2.2",
+    "turndown-plugin-gfm": "^1.0.2"
+  }
+}

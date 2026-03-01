@@ -1,0 +1,33 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "compile",
+			"type": "shell",
+			"command": "node esbuild.mjs",
+			"group": "build",
+			"problemMatcher": ["$esbuild-watch"]
+		},
+		{
+			"label": "watch",
+			"type": "shell",
+			"command": "node esbuild.mjs --watch",
+			"isBackground": true,
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": ["$esbuild-watch"]
+		},
+		{
+			"label": "test",
+			"type": "shell",
+			"command": "npm test",
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"problemMatcher": []
+		}
+	]
+}

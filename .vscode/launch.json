@@ -1,0 +1,23 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Run Extension",
+			"type": "extensionHost",
+			"request": "launch",
+			"args": ["--extensionDevelopmentPath=${workspaceFolder}"],
+			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
+			"preLaunchTask": "compile",
+			"sourceMaps": true
+		},
+		{
+			"name": "Run Tests",
+			"type": "node",
+			"request": "launch",
+			"runtimeArgs": ["--import", "tsx"],
+			"args": ["${workspaceFolder}/src/test/run.ts"],
+			"sourceMaps": true,
+			"console": "integratedTerminal"
+		}
+	]
+}
