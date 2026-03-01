@@ -113,7 +113,7 @@ function cleanMarkdown(md: string): string {
         if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
           return url;
         }
-        return parsed.href;
+        return decoded;
       } catch {
         return url;
       }
