@@ -299,6 +299,55 @@ describe("htmlToMarkdown", () => {
     assert.ok(!md.includes("data-"), `Expected no data attrs in: ${md}`);
   });
 
+  // ─── Google Docs inline-style formatting ──────────────────────
+
+  it("converts Google Docs inline-style bold to markdown bold", () => {
+    const html = `<span style="font-weight: bold;">important</span>`;
+    const md = htmlToMarkdown(html);
+    assert.ok(md.includes("**important**"), `Expected **important** in: ${md}`);
+  });
+
+  it("converts Google Docs font-weight:700 to markdown bold", () => {
+    const html = `<span style="font-size:11pt;font-weight:700;font-family:Arial;">heavy</span>`;
+    const md = htmlToMarkdown(html);
+    assert.ok(md.includes("**heavy**"), `Expected **heavy** in: ${md}`);
+  });
+
+  it("converts Google Docs inline-style italic to markdown italic", () => {
+    const html = `<span style="font-style: italic;">emphasis</span>`;
+    const md = htmlToMarkdown(html);
+    assert.ok(md.includes("*emphasis*"), `Expected *emphasis* in: ${md}`);
+  });
+
+  it("converts Google Docs inline-style strikethrough", () => {
+    const html = `<span style="text-decoration: line-through;">removed</span>`;
+    const md = htmlToMarkdown(html);
+    assert.ok(md.includes("~removed~"), `Expected ~removed~ in: ${md}`);
+  });
+
+  it("converts Google Docs monospace spans to inline code", () => {
+    const html = `<span style="font-family:'Courier New';font-size:11pt;">codeSnippet</span>`;
+    const md = htmlToMarkdown(html);
+    assert.ok(md.includes("`codeSnippet`"), `Expected inline code in: ${md}`);
+  });
+
+  it("handles Google Docs mixed formatting paragraph", () => {
+    const html = `<p><span style="font-weight:bold;">Bold</span> and <span style="font-style:italic;">italic</span> and <span style="font-family:'Courier New';">code</span></p>`;
+    const md = htmlToMarkdown(html);
+    assert.ok(md.includes("**Bold**"), `Expected **Bold** in: ${md}`);
+    assert.ok(md.includes("*italic*"), `Expected *italic* in: ${md}`);
+    assert.ok(md.includes("`code`"), `Expected inline code in: ${md}`);
+  });
+
+  it("handles full Google Docs clipboard HTML", () => {
+    const html = `<b style="font-weight:normal" id="docs-internal-guid-abc123"><p dir="ltr"><span style="font-weight:bold;">Title</span></p><p dir="ltr"><span style="font-size:11pt;">Normal text with </span><span style="font-size:11pt;font-style:italic;">italic</span><span style="font-size:11pt;"> and </span><span style="font-size:11pt;font-weight:700;">bold</span></p></b>`;
+    const md = htmlToMarkdown(html);
+    assert.ok(md.includes("**Title**"), `Expected **Title** in: ${md}`);
+    assert.ok(md.includes("*italic*"), `Expected *italic* in: ${md}`);
+    assert.ok(md.includes("**bold**"), `Expected **bold** in: ${md}`);
+    assert.ok(!md.includes("docs-internal-guid"), `Expected no GUID in: ${md}`);
+  });
+
   it("strips fragment markers from conversion", () => {
     const html = `<!--StartFragment--><p>Clean <strong>content</strong></p><!--EndFragment-->`;
     const md = htmlToMarkdown(html);

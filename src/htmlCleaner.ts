@@ -55,6 +55,22 @@ const DIR_ATTR = /\s*dir\s*=\s*"(?:ltr|rtl)"/gi;
 /** Google Docs non-semantic bold: <b style="...font-weight:normal..."> → unwrap */
 const GDOCS_FAKE_BOLD = /<b\s[^>]*?style\s*=\s*"[^"]*font-weight:\s*normal[^"]*"[^>]*>([\s\S]*?)<\/b>/gi;
 
+/** Span/font with font-weight:bold or font-weight:700-900 → <strong> */
+const INLINE_BOLD =
+  /<(span|font)\b([^>]*?)style\s*=\s*"([^"]*?)font-weight:\s*(?:bold|[7-9]00)([^"]*?)"([^>]*)>([\s\S]*?)<\/\1>/gi;
+
+/** Span/font with font-style:italic → <em> */
+const INLINE_ITALIC =
+  /<(span|font)\b([^>]*?)style\s*=\s*"([^"]*?)font-style:\s*italic([^"]*?)"([^>]*)>([\s\S]*?)<\/\1>/gi;
+
+/** Span/font with text-decoration containing line-through → <s> */
+const INLINE_STRIKETHROUGH =
+  /<(span|font)\b([^>]*?)style\s*=\s*"([^"]*?)text-decoration:\s*[^"]*line-through([^"]*?)"([^>]*)>([\s\S]*?)<\/\1>/gi;
+
+/** Span/font with monospace font-family → <code> */
+const INLINE_CODE =
+  /<(span|font)\b([^>]*?)style\s*=\s*"([^"]*?)font-family:\s*[^"]*?(?:Courier|Consolas|monospace|'Courier New')[^"]*?"([^>]*)>([\s\S]*?)<\/\1>/gi;
+
 /** data-* attributes from Notion, Confluence, Slack, etc. */
 const DATA_ATTRS = /\s*data-[a-z][a-z0-9-]*\s*=\s*"[^"]*"/gi;
 
@@ -80,7 +96,14 @@ export function cleanHtml(html: string): string {
     // Remove style attributes with mso- properties
     .replace(MSO_STYLE, "")
     // Google Docs: unwrap non-semantic <b> BEFORE stripping all styles
-    .replace(GDOCS_FAKE_BOLD, "$1")
+    .replace(GDOCS_FAKE_BOLD, "$1");
+
+  // Convert inline-styled formatting to semantic tags before stripping styles.
+  // Google Docs uses <span style="font-weight:bold"> instead of <strong>, etc.
+  // Run multiple passes since a single element can have bold+italic.
+  result = promotInlineStylesToTags(result);
+
+  result = result
     // Remove all remaining inline styles for clean output
     .replace(ALL_STYLES, "")
     // Google Docs cleanup
@@ -99,6 +122,33 @@ export function cleanHtml(html: string): string {
 
   // Promote first <tr> to <thead> in tables that lack one
   result = promoteTableHeaders(result);
+
+  return result;
+}
+
+/**
+ * Convert inline-styled spans (Google Docs pattern) to semantic HTML tags.
+ * Handles bold, italic, strikethrough, and monospace code.
+ * Runs each pattern in a loop to handle nested formatting.
+ */
+function promotInlineStylesToTags(html: string): string {
+  let result = html;
+
+  // Bold: <span style="...font-weight:bold..."> → <strong>...</strong>
+  result = result.replace(INLINE_BOLD, (_m, _tag, _pre, _s1, _s2, _post, content) =>
+    `<strong>${content}</strong>`);
+
+  // Italic: <span style="...font-style:italic..."> → <em>...</em>
+  result = result.replace(INLINE_ITALIC, (_m, _tag, _pre, _s1, _s2, _post, content) =>
+    `<em>${content}</em>`);
+
+  // Strikethrough: <span style="...line-through..."> → <s>...</s>
+  result = result.replace(INLINE_STRIKETHROUGH, (_m, _tag, _pre, _s1, _s2, _post, content) =>
+    `<s>${content}</s>`);
+
+  // Code: <span style="...font-family:Courier..."> → <code>...</code>
+  result = result.replace(INLINE_CODE, (_m, _tag, _pre, _s1, _post, content) =>
+    `<code>${content}</code>`);
 
   return result;
 }
