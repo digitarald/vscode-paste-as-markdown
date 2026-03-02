@@ -25,8 +25,8 @@ const MSO_STYLE = /\s*style\s*=\s*(?:"[^"]*mso-[^"]*"|'[^']*mso-[^']*')/gi;
 /** Remove all remaining inline style attributes (aggressive but clean) */
 const ALL_STYLES = /\s*style\s*=\s*(?:"[^"]*"|'[^']*')/gi;
 
-/** Remove empty spans: <span> </span>, <span></span> */
-const EMPTY_SPANS = /<span[^>]*>\s*<\/span>/gi;
+/** Remove empty spans: <span> </span>, <span></span> (preserves newlines for <pre> blocks) */
+const EMPTY_SPANS = /<span[^>]*>[^\S\n]*<\/span>/gi;
 
 /** Remove empty paragraphs */
 const EMPTY_PARAGRAPHS = /<p[^>]*>\s*(?:&nbsp;\s*)*<\/p>/gi;
@@ -74,6 +74,23 @@ const INLINE_CODE =
 /** data-* attributes from Notion, Confluence, Slack, etc. */
 const DATA_ATTRS = /\s*data-[a-z][a-z0-9-]*\s*=\s*"[^"]*"/gi;
 
+// --- Twitter/X Article patterns ---
+
+/** Detect Twitter/X article HTML by data-testid markers */
+const TWITTER_DETECT = /data-testid="(?:twitter-article-title|twitterArticleRichTextView|longformRichTextComponent)"/;
+
+/** Style attributes containing Tailwind CSS variables (massive bloat) */
+const TAILWIND_STYLES = /\s*style\s*=\s*"[^"]*--tw-[^"]*"/gi;
+
+/** Twitter article title div → unwrap to <h1> */
+const TWITTER_TITLE = /<div[^>]*data-testid\s*=\s*"twitter-article-title"[^>]*>([\s\S]*?)<\/div>/i;
+
+/** Twitter engagement bar (replies, reposts, likes, etc.) */
+const TWITTER_ENGAGEMENT = /<div[^>]*aria-label\s*=\s*"[^"]*(?:repl(?:y|ies)|repost|like|bookmark|view)[^"]*"[^>]*role\s*=\s*"group"[^>]*>[\s\S]*?<\/div>\s*<\/div>/i;
+
+/** Twitter code block language label: <div ...><div dir="ltr"><span>lang</span></div><div></div></div><pre> */
+const TWITTER_CODE_LANG = /<div[^>]*data-testid\s*=\s*"markdown-code-block"[^>]*>\s*<div[^>]*>\s*<div[^>]*>\s*<span[^>]*>(\w+)<\/span>\s*<\/div>\s*(?:<div[^>]*>\s*<\/div>\s*)?\s*<\/div>\s*<pre[^>]*>\s*<code/gi;
+
 /**
  * Cleans messy HTML (especially from Word/Office) into simple,
  * standards-compliant HTML that Turndown can handle well.
@@ -81,7 +98,14 @@ const DATA_ATTRS = /\s*data-[a-z][a-z0-9-]*\s*=\s*"[^"]*"/gi;
 export function cleanHtml(html: string): string {
   let result = html
     // Strip clipboard fragment markers first
-    .replace(FRAGMENT_MARKERS, "")
+    .replace(FRAGMENT_MARKERS, "");
+
+  // Twitter/X article: strip Tailwind bloat and fix structure early
+  if (TWITTER_DETECT.test(result)) {
+    result = cleanTwitterHtml(result);
+  }
+
+  result = result
     // Remove XML processing instructions and blocks
     .replace(XML_PI, "")
     .replace(XML_BLOCKS, "")
@@ -122,6 +146,49 @@ export function cleanHtml(html: string): string {
 
   // Promote first <tr> to <thead> in tables that lack one
   result = promoteTableHeaders(result);
+
+  return result;
+}
+
+/**
+ * Pre-process Twitter/X article HTML:
+ * - Strip massive Tailwind CSS variable bloat from style attributes
+ * - Promote article title to <h1>
+ * - Remove engagement metrics bar
+ * - Wire code block language labels into <code class="language-X">
+ */
+function cleanTwitterHtml(html: string): string {
+  let result = html
+    // Strip Tailwind CSS variable bloat (can be 90%+ of clipboard size)
+    .replace(TAILWIND_STYLES, "");
+
+  // Promote article title div to <h1>
+  result = result.replace(TWITTER_TITLE, (_m, inner) => {
+    const text = inner.replace(/<[^>]+>/g, "").trim();
+    return text ? `<h1>${text}</h1>` : "";
+  });
+
+  // Remove engagement metrics bar (replies, reposts, likes, etc.)
+  result = result.replace(TWITTER_ENGAGEMENT, "");
+
+  // Move code block language labels into <code class="language-X">
+  result = result.replace(TWITTER_CODE_LANG, (_m, lang) => {
+    const normalizedLang = lang.toLowerCase() === "plaintext" ? "" : lang.toLowerCase();
+    const cls = normalizedLang ? ` class="language-${normalizedLang}"` : "";
+    return `<pre><code${cls}`;
+  });
+
+  // Unwrap block elements (<div>) inside headings — Turndown cannot convert
+  // headings that contain block-level children
+  result = result.replace(
+    /<(h[1-6])([^>]*)>([\s\S]*?)<\/\1>/gi,
+    (_m, tag, attrs, inner) => {
+      const unwrapped = inner
+        .replace(/<div[^>]*>/gi, "")
+        .replace(/<\/div>/gi, "");
+      return `<${tag}${attrs}>${unwrapped}</${tag}>`;
+    }
+  );
 
   return result;
 }

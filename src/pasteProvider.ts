@@ -44,7 +44,7 @@ export class PasteAsMarkdownProvider
     }
 
     // Skip excessively large HTML to avoid blocking the extension host
-    if (html.length > 1_000_000) {
+    if (html.length > 25_000_000) {
       return undefined;
     }
 

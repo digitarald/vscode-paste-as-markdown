@@ -2,7 +2,7 @@
   "name": "paste-as-markdown",
   "displayName": "Paste as Markdown",
   "description": "Paste rich text from Word, websites, and more as clean Markdown. Like Obsidian, but in VS Code.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "digitarald",
   "icon": "docs/icon.png",
   "license": "MIT",
