@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/logo.png" alt="Paste as Markdown" width="128">
+  <img src="https://raw.githubusercontent.com/digitarald/vscode-paste-as-markdown/main/docs/logo.png" alt="Paste as Markdown" width="128">
 </p>
 
 # Paste as Markdown
