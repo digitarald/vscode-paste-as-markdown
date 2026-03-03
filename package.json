@@ -2,7 +2,7 @@
   "name": "paste-as-markdown",
   "displayName": "Paste as Markdown",
   "description": "Paste rich text from Word, websites, and more as clean Markdown. Like Obsidian, but in VS Code.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "digitarald",
   "icon": "docs/icon.png",
   "license": "MIT",
@@ -35,6 +35,38 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "commands": [
+      {
+        "command": "pasteAsMarkdown.copyAsHtml",
+        "title": "Copy as HTML",
+        "category": "Paste as Markdown",
+        "icon": "$(clippy)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "pasteAsMarkdown.copyAsHtml",
+        "key": "ctrl+c",
+        "mac": "cmd+c",
+        "when": "editorLangId == markdown && config.pasteAsMarkdown.copyAsHtmlOnCopy"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "pasteAsMarkdown.copyAsHtml",
+          "when": "editorLangId == markdown",
+          "group": "9_cutcopypaste"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "pasteAsMarkdown.copyAsHtml",
+          "when": "resourceLangId == markdown",
+          "group": "9_cutcopypaste"
+        }
+      ]
+    },
     "configuration": {
       "title": "Paste as Markdown",
       "properties": {
@@ -42,6 +74,11 @@
           "type": "boolean",
           "default": true,
           "description": "Enable automatic conversion of rich text to Markdown when pasting."
+        },
+        "pasteAsMarkdown.copyAsHtmlOnCopy": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Override `Cmd+C` / `Ctrl+C` in Markdown files to copy as rich HTML. The clipboard will contain both HTML (for pasting into Gmail, Docs, etc.) and plain text (original Markdown)."
         }
       }
     }
@@ -53,15 +90,17 @@
     "package": "vsce package"
   },
   "devDependencies": {
+    "@types/markdown-it": "^14.1.2",
     "@types/node": "^25.3.2",
     "@types/turndown": "^5.0.6",
     "@types/vscode": "^1.109.0",
-    "esbuild": "^0.27.3",
     "@vscode/vsce": "^3.3.2",
+    "esbuild": "^0.27.3",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "markdown-it": "^14.1.1",
     "turndown": "^7.2.2",
     "turndown-plugin-gfm": "^1.0.2"
   }

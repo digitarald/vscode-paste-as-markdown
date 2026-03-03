@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0 — Copy as HTML
+
+- **Copy as HTML**: Convert markdown to rich HTML on the clipboard for pasting into Gmail, Google Docs, Word, and other rich text apps
+- Clipboard contains both `text/html` (rendered) and `text/plain` (original markdown) — safe for all paste targets
+- Cross-platform: macOS (NSPasteboard), Windows (CF_HTML), Linux (xclip/wl-copy)
+- Available from command palette, editor context menu, and explorer context menu
+- Opt-in `pasteAsMarkdown.copyAsHtmlOnCopy` setting to override `Cmd+C`/`Ctrl+C` in markdown files
+- GitHub-flavored styling with task list checkbox support
+
 ## 0.2.0 — Twitter/X article support
 
 - Twitter/X article paste: strip Tailwind CSS bloat (6 MB → 200 KB), promote title to `<h1>`, remove engagement metrics, wire code block language labels
