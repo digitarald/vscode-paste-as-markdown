@@ -32,6 +32,12 @@ export class PasteAsMarkdownProvider
       return undefined;
     }
 
+    // Skip when pasting from a code editor (e.g. VS Code) — the HTML is just
+    // syntax-highlighted source code, not rich text that needs conversion.
+    if (dataTransfer.get("vscode-editor-data")) {
+      return undefined;
+    }
+
     // Get HTML content from clipboard
     const htmlItem = dataTransfer.get("text/html");
     if (!htmlItem) {

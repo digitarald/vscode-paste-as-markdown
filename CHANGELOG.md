@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1 — Fix markdown-to-markdown paste
+
+- Fix pasting plain markdown into a markdown file causing formatting breakage (double-escaped headings, bold, backticks)
+- Skip HTML-to-Markdown conversion when clipboard originates from a code editor (VS Code)
+
 ## 0.3.0 — Copy as HTML
 
 - **Copy as HTML**: Convert markdown to rich HTML on the clipboard for pasting into Gmail, Google Docs, Word, and other rich text apps
