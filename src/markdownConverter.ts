@@ -12,6 +12,9 @@ const EXCESSIVE_BLANK_LINES = /(?:\n[ \t]*){3,}/g;
 /** Trailing whitespace per line */
 const TRAILING_WHITESPACE = /[^\S\n]+$/gm;
 
+/** Turndown escapes leading dashes (\-) to prevent accidental lists; undo unless it's a horizontal rule (\---) */
+const ESCAPED_DASH = /\\-(?!-)/g;
+
 /** Google Docs redirect URL wrapper */
 const GOOGLE_REDIRECT_URL =
   /https?:\/\/(?:www\.)?google\.com\/url\?[^\s)]*?q=(https?[^&\s)]+)[^\s)]*/g;
@@ -105,6 +108,8 @@ function cleanMarkdown(md: string): string {
   return md
     .replace(EXCESSIVE_BLANK_LINES, "\n\n")
     .replace(TRAILING_WHITESPACE, "")
+    // Undo Turndown's dash escaping (\-) which breaks pasted bullet text
+    .replace(ESCAPED_DASH, "-")
     // Unwrap Google Docs redirect URLs
     .replace(GOOGLE_REDIRECT_URL, (_match, url) => {
       try {

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.2 — Fix escaped dashes in bullet pastes
+
+- Fix `\-` escaping when pasting markdown-style bullet points from rich text sources (Slack, web pages, etc.)
+- Turndown's leading-dash escape is now stripped in post-processing while preserving horizontal rule (`---`) prevention
+
 ## 0.3.1 — Fix markdown-to-markdown paste
 
 - Fix pasting plain markdown into a markdown file causing formatting breakage (double-escaped headings, bold, backticks)

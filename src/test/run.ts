@@ -354,6 +354,26 @@ describe("htmlToMarkdown", () => {
     assert.ok(!md.includes("Fragment"), `Expected no fragment markers in: ${md}`);
     assert.ok(md.includes("**content**"), `Expected bold in: ${md}`);
   });
+
+  it("does not escape dashes in br-separated bullet items", () => {
+    const html = `<p>- <strong>First</strong> item<br>- Second item</p>`;
+    const md = htmlToMarkdown(html);
+    assert.ok(!md.includes("\\-"), `Expected no \\- in: ${md}`);
+    assert.ok(md.includes("- **First** item"), `Expected clean first bullet in: ${md}`);
+    assert.ok(md.includes("- Second item"), `Expected clean second bullet in: ${md}`);
+  });
+
+  it("does not escape dashes in inline text", () => {
+    const html = `<p>Some text)- BUT: more text</p>`;
+    const md = htmlToMarkdown(html);
+    assert.ok(!md.includes("\\-"), `Expected no \\- in: ${md}`);
+  });
+
+  it("preserves escaped triple-dash horizontal rule prevention", () => {
+    const html = `<p>---</p>`;
+    const md = htmlToMarkdown(html);
+    assert.ok(md.includes("\\---"), `Expected \\--- preserved in: ${md}`);
+  });
 });
 
 // ─── Smart context detection tests ────────────────────────────
