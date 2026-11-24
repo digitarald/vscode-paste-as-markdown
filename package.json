@@ -11,11 +11,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/digitarald/paste-as-markdown"
+    "url": "https://github.com/digitarald/vscode-paste-as-markdown"
   },
-  "homepage": "https://github.com/digitarald/paste-as-markdown#readme",
+  "homepage": "https://github.com/digitarald/vscode-paste-as-markdown#readme",
   "bugs": {
-    "url": "https://github.com/digitarald/paste-as-markdown/issues"
+    "url": "https://github.com/digitarald/vscode-paste-as-markdown/issues"
   },
   "categories": [
     "Formatters",
