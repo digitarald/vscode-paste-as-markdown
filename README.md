@@ -62,7 +62,7 @@ VS Code 1.109.0 or later.
 
 ## Contributing
 
-Issues and PRs welcome at [github.com/digitarald/paste-as-markdown](https://github.com/digitarald/paste-as-markdown).
+Issues and PRs welcome at [github.com/digitarald/vscode-paste-as-markdown](https://github.com/digitarald/vscode-paste-as-markdown).
 
 ## License
 
